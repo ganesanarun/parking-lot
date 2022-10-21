@@ -2,7 +2,7 @@ package org.sahaj.calculators;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.sahaj.Result.Success;
+import org.sahaj.FeeResult.Success;
 
 import java.math.BigDecimal;
 

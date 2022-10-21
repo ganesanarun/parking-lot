@@ -1,8 +1,8 @@
 package org.sahaj.calculators;
 
-import org.sahaj.Result;
-import org.sahaj.Result.InvalidRangeError;
-import org.sahaj.Result.Success;
+import org.sahaj.FeeResult;
+import org.sahaj.FeeResult.InvalidRangeError;
+import org.sahaj.FeeResult.Success;
 
 import java.math.BigDecimal;
 import java.util.function.BiFunction;
@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 public class HourlyRangeParkingHourFeeCalculator implements ParkingHourFeeCalculator {
 
     private final BiFunction<ParkingHour, Range, ParkingHour> parkingHourRangeParkingHourBiFunction;
-    private final BiFunction<Result<BigDecimal>, Result<BigDecimal>, Result<BigDecimal>> resultProducer;
+    private final BiFunction<FeeResult<BigDecimal>, FeeResult<BigDecimal>, FeeResult<BigDecimal>> resultProducer;
     private final ParkingHourFeeCalculator next;
     private final Range range;
     private final BigDecimal feeForRange;
@@ -18,7 +18,7 @@ public class HourlyRangeParkingHourFeeCalculator implements ParkingHourFeeCalcul
     private HourlyRangeParkingHourFeeCalculator(Range range,
         BigDecimal feeForRange,
         BiFunction<ParkingHour, Range, ParkingHour> parkingHourRangeParkingHourBiFunction,
-        BiFunction<Result<BigDecimal>, Result<BigDecimal>, Result<BigDecimal>> resultProducer,
+        BiFunction<FeeResult<BigDecimal>, FeeResult<BigDecimal>, FeeResult<BigDecimal>> resultProducer,
         ParkingHourFeeCalculator next) {
         this.feeForRange = feeForRange;
         this.parkingHourRangeParkingHourBiFunction = parkingHourRangeParkingHourBiFunction;
@@ -28,7 +28,7 @@ public class HourlyRangeParkingHourFeeCalculator implements ParkingHourFeeCalcul
     }
 
     @Override
-    public Result<BigDecimal> calculate(ParkingHour parkingHour) {
+    public FeeResult<BigDecimal> calculate(ParkingHour parkingHour) {
         if (parkingHour.beyond(this.range)) {
             return resultProducer.apply(
                 new Success<>(feeForRange),

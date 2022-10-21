@@ -5,7 +5,6 @@ import org.sahaj.FeeResult;
 import java.math.BigDecimal;
 
 @FunctionalInterface
-public interface ParkingHourFeeCalculator {
-
-    FeeResult<BigDecimal> calculate(ParkingHour parkingHour);
+public interface ParkingFeeCalculator {
+    FeeResult<BigDecimal> feeFor(ParkingToken token);
 }

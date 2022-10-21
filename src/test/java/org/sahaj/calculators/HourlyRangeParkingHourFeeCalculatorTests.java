@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.sahaj.Result;
-import org.sahaj.Result.InvalidRangeError;
-import org.sahaj.Result.Success;
+import org.sahaj.FeeResult;
+import org.sahaj.FeeResult.InvalidRangeError;
+import org.sahaj.FeeResult.Success;
 
 import java.math.BigDecimal;
 import java.util.function.BiFunction;
@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.sahaj.calculators.DataGenerator.from;
 
 class HourlyRangeParkingHourFeeCalculatorTests {
 
@@ -76,7 +77,7 @@ class HourlyRangeParkingHourFeeCalculatorTests {
                 BigDecimal.valueOf(30),
                 (parkingHour, range) -> parkingHour,
                 endRange);
-            final var parkingHour = ParkingHour.from(hours, minutes);
+            final var parkingHour = from(hours, minutes);
 
             final Success<BigDecimal> result = (Success<BigDecimal>) feeCalculator.calculate(parkingHour);
 
@@ -96,7 +97,7 @@ class HourlyRangeParkingHourFeeCalculatorTests {
                 BigDecimal.valueOf(60),
                 (parkingHour, range) -> parkingHour,
                 endRange);
-            final var parkingHour = ParkingHour.from(hours, minutes);
+            final var parkingHour = from(hours, minutes);
 
             final Success<BigDecimal> result = (Success<BigDecimal>) feeCalculator.calculate(parkingHour);
 
@@ -128,7 +129,7 @@ class HourlyRangeParkingHourFeeCalculatorTests {
                     HourlyRangeParkingHourFeeCalculator.ofWithIdentical(Range.from(8, 24),
                         BigDecimal.valueOf(60),
                         new PerDayParkingHourFeeCalculator(BigDecimal.valueOf(80)))));
-            final var parkingHour = ParkingHour.from(hours, minutes);
+            final var parkingHour = from(hours, minutes);
 
             final Success<BigDecimal> result = (Success<BigDecimal>) feeCalculator.calculate(parkingHour);
 
@@ -144,7 +145,7 @@ class HourlyRangeParkingHourFeeCalculatorTests {
                 HourlyRangeParkingHourFeeCalculator.ofWithIdentical(Range.from(12, 24),
                     BigDecimal.valueOf(80),
                     new PerDayParkingHourFeeCalculator(BigDecimal.valueOf(100))));
-            final var parkingHour = ParkingHour.from(hours, minutes);
+            final var parkingHour = from(hours, minutes);
 
             final Success<BigDecimal> result = (Success<BigDecimal>) feeCalculator.calculate(parkingHour);
 
@@ -167,7 +168,7 @@ class HourlyRangeParkingHourFeeCalculatorTests {
     private record EmptyHourFeeCalculator() implements ParkingHourFeeCalculator {
 
         @Override
-        public Result<BigDecimal> calculate(ParkingHour totalHours) {
+        public FeeResult<BigDecimal> calculate(ParkingHour totalHours) {
             return null;
         }
     }

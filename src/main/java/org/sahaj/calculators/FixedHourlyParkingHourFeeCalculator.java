@@ -1,7 +1,7 @@
 package org.sahaj.calculators;
 
-import org.sahaj.Result;
-import org.sahaj.Result.Success;
+import org.sahaj.FeeResult;
+import org.sahaj.FeeResult.Success;
 
 import java.math.BigDecimal;
 
@@ -17,7 +17,7 @@ public class FixedHourlyParkingHourFeeCalculator implements ParkingHourFeeCalcul
     }
 
     @Override
-    public Result<BigDecimal> calculate(ParkingHour parkingHour) {
+    public FeeResult<BigDecimal> calculate(ParkingHour parkingHour) {
         return new Success<>(feePerHour.multiply(valueOf(roundUpHours(parkingHour))));
     }
 }

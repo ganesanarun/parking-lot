@@ -2,6 +2,9 @@ package org.sahaj.calculators;
 
 import com.google.common.primitives.UnsignedInteger;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+
 import static java.lang.String.format;
 
 public record ParkingHour(UnsignedInteger hours, UnsignedInteger minutes) {
@@ -30,13 +33,16 @@ public record ParkingHour(UnsignedInteger hours, UnsignedInteger minutes) {
         return new ParkingHour(UnsignedInteger.valueOf(hours), UnsignedInteger.ZERO);
     }
 
-    public static ParkingHour from(long hours, long minutes) {
-        if (hours < 0) {
-            throw new IllegalArgumentException("hours must not be negative");
+    public static ParkingHour from(ZonedDateTime start, ZonedDateTime end) {
+        if (start == null || end == null) {
+            throw new IllegalArgumentException("start and end must not be null");
         }
-        if (minutes < 0 || minutes >= 60) {
-            throw new IllegalArgumentException("minutes must not be negative or greater than 59");
+        final var totalMinutes = ChronoUnit.MINUTES.between(start, end);
+        if (totalMinutes < 0) {
+            throw new IllegalArgumentException("start time should be lesser than end time");
         }
+        var hours = totalMinutes / 60;
+        var minutes = totalMinutes % 60;
         return new ParkingHour(UnsignedInteger.valueOf(hours), UnsignedInteger.valueOf(minutes));
     }
 
