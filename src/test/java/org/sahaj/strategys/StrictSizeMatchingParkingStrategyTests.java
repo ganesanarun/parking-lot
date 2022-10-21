@@ -13,6 +13,7 @@ import org.sahaj.VehicleType.Truck;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,7 +27,7 @@ class StrictSizeMatchingParkingStrategyTests {
     @ParameterizedTest
     @MethodSource(value = "unsupportedParameters")
     void returnEmptyParkingSpotForUnsupportedVehicles(Vehicle vehicle, Map<VehicleType, Size> vehicleTypeSizeMap) {
-        final var spotsWithEverything = List.of(new ParkingSpot("A1", MEDIUM),
+        final var spotsWithEverything = Set.of(new ParkingSpot("A1", MEDIUM),
             new ParkingSpot("A2", LARGE),
             new ParkingSpot("A3", Size.SMALL));
         final var strictSizeMatchingParkingStrategy = new StrictSizeMatchingParkingStrategy(vehicleTypeSizeMap);
@@ -38,7 +39,7 @@ class StrictSizeMatchingParkingStrategyTests {
 
     @ParameterizedTest
     @MethodSource(value = "nonAvailableParameters")
-    void returnEmptyWhenMatchingSpotDoesNotExists(Vehicle vehicle, List<ParkingSpot> spots) {
+    void returnEmptyWhenMatchingSpotDoesNotExists(Vehicle vehicle, Set<ParkingSpot> spots) {
         final var vehicleSizeMap = Map.<VehicleType, Size>of(new Car(), MEDIUM,
             new Bike(), SMALL,
             new Truck(), LARGE);
@@ -51,7 +52,7 @@ class StrictSizeMatchingParkingStrategyTests {
 
     @ParameterizedTest
     @MethodSource(value = "availableParameters")
-    void returnAvailableParkingSpot(Vehicle vehicle, List<ParkingSpot> spots) {
+    void returnAvailableParkingSpot(Vehicle vehicle, Set<ParkingSpot> spots) {
         final var vehicleSizeMap = Map.<VehicleType, Size>of(new Car(), MEDIUM,
             new Bike(), SMALL,
             new Truck(), LARGE);
@@ -71,14 +72,14 @@ class StrictSizeMatchingParkingStrategyTests {
 
     static Stream<Arguments> nonAvailableParameters() {
         return Stream.of(
-            of(new Vehicle(new Car()), List.of(new ParkingSpot("A1", LARGE), new ParkingSpot("A2", SMALL))),
-            of(new Vehicle(new Bike()), List.of(new ParkingSpot("A1", LARGE), new ParkingSpot("A2", MEDIUM))),
-            of(new Vehicle(new Truck()), List.of(new ParkingSpot("A1", MEDIUM), new ParkingSpot("A2", SMALL))));
+            of(new Vehicle(new Car()), Set.of(new ParkingSpot("A1", LARGE), new ParkingSpot("A2", SMALL))),
+            of(new Vehicle(new Bike()), Set.of(new ParkingSpot("A1", LARGE), new ParkingSpot("A2", MEDIUM))),
+            of(new Vehicle(new Truck()), Set.of(new ParkingSpot("A1", MEDIUM), new ParkingSpot("A2", SMALL))));
     }
 
     static Stream<Arguments> availableParameters() {
-        return Stream.of(of(new Vehicle(new Car()), List.of(new ParkingSpot("A1", MEDIUM))),
-            of(new Vehicle(new Bike()), List.of(new ParkingSpot("A1", SMALL))),
-            of(new Vehicle(new Truck()), List.of(new ParkingSpot("A1", LARGE))));
+        return Stream.of(of(new Vehicle(new Car()), Set.of(new ParkingSpot("A1", MEDIUM))),
+            of(new Vehicle(new Bike()), Set.of(new ParkingSpot("A1", SMALL))),
+            of(new Vehicle(new Truck()), Set.of(new ParkingSpot("A1", LARGE))));
     }
 }

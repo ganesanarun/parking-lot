@@ -8,9 +8,10 @@ import org.sahaj.VehicleType;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
-public class StrictSizeMatchingParkingStrategy {
+public class StrictSizeMatchingParkingStrategy implements ParkingSpotAllocationStrategy {
 
     private final Map<VehicleType, Size> vehicleTypeSizeMap;
 
@@ -20,7 +21,8 @@ public class StrictSizeMatchingParkingStrategy {
         this.vehicleTypeSizeMap = vehicleTypeSizeMap;
     }
 
-    public Optional<ParkingSpot> findOneFor(Vehicle vehicle, List<ParkingSpot> spots) {
+    @Override
+    public Optional<ParkingSpot> findOneFor(Vehicle vehicle, Set<ParkingSpot> spots) {
         if (!vehicleTypeSizeMap.containsKey(vehicle.vehicleType())) {
             return Optional.empty();
         }
@@ -28,7 +30,7 @@ public class StrictSizeMatchingParkingStrategy {
         return parkingSpotsOf(size, spots).findFirst();
     }
 
-    static Stream<ParkingSpot> parkingSpotsOf(Size size, List<ParkingSpot> spots) {
+    static Stream<ParkingSpot> parkingSpotsOf(Size size, Set<ParkingSpot> spots) {
         return spots.stream().filter(parkingSpot -> parkingSpot.size().equals(size));
     }
 }
