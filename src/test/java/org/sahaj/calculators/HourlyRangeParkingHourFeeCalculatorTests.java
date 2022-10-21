@@ -17,22 +17,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class HourlyRangeParkingFeeCalculatorTests {
+class HourlyRangeParkingHourFeeCalculatorTests {
 
     @ParameterizedTest(name = "{3}")
     @MethodSource("nullParameters")
     void throwAnExceptionWhenNextFeeProcessorIsNull(Range range,
         BigDecimal feeForDuration,
-        ParkingFeeCalculator next,
+        ParkingHourFeeCalculator next,
         String message) {
         var exception = assertThrows(IllegalArgumentException.class,
-            () -> HourlyRangeParkingFeeCalculator.ofWithIdentical(range, feeForDuration, next));
+            () -> HourlyRangeParkingHourFeeCalculator.ofWithIdentical(range, feeForDuration, next));
         assertEquals(message, exception.getMessage());
     }
 
     @Test
     void returnFeeForRangeOfHours() {
-        final var calculator = HourlyRangeParkingFeeCalculator.ofWithIdentical(
+        final var calculator = HourlyRangeParkingHourFeeCalculator.ofWithIdentical(
             Range.from(0, 5),
             BigDecimal.TEN,
             (totalHours) -> {
@@ -46,11 +46,11 @@ class HourlyRangeParkingFeeCalculatorTests {
 
     @Test
     void returnFailureResponseIfCalculatorIsNotSetupProperlyForRange() {
-        var endRange = HourlyRangeParkingFeeCalculator.ofWithIdentical(
+        var endRange = HourlyRangeParkingHourFeeCalculator.ofWithIdentical(
             Range.from(6, 10),
             BigDecimal.TEN,
-            new EmptyFeeCalculator());
-        final var calculator = HourlyRangeParkingFeeCalculator.ofWithIdentical(
+            new EmptyHourFeeCalculator());
+        final var calculator = HourlyRangeParkingHourFeeCalculator.ofWithIdentical(
             Range.from(0, 5),
             BigDecimal.TEN,
             endRange);
@@ -68,11 +68,11 @@ class HourlyRangeParkingFeeCalculatorTests {
         void returnFeeWithRangeFeeModelWithFeePerHourInTheEnd(long hours, long minutes, long cost) {
             BiFunction<ParkingHour, Range, ParkingHour> parkingHourRangeParkingHourBiFunction = (parkingHour, range) -> parkingHour.subtractHours(
                 range.getToHour());
-            final var endRange = HourlyRangeParkingFeeCalculator.ofWithSum(Range.from(4, 12),
+            final var endRange = HourlyRangeParkingHourFeeCalculator.ofWithSum(Range.from(4, 12),
                 BigDecimal.valueOf(60),
                 parkingHourRangeParkingHourBiFunction,
-                new FixedHourlyParkingFeeCalculator(BigDecimal.valueOf(100)));
-            final var feeCalculator = HourlyRangeParkingFeeCalculator.ofWithSum(Range.from(0, 4),
+                new FixedHourlyParkingHourFeeCalculator(BigDecimal.valueOf(100)));
+            final var feeCalculator = HourlyRangeParkingHourFeeCalculator.ofWithSum(Range.from(0, 4),
                 BigDecimal.valueOf(30),
                 (parkingHour, range) -> parkingHour,
                 endRange);
@@ -88,11 +88,11 @@ class HourlyRangeParkingFeeCalculatorTests {
         void returnFeeWithRangeFeeModelWithFeePerHourInTheEnd2(long hours, long minutes, long cost) {
             BiFunction<ParkingHour, Range, ParkingHour> parkingHourRangeParkingHourBiFunction = (parkingHour, range) -> parkingHour.subtractHours(
                 range.getToHour());
-            final var endRange = HourlyRangeParkingFeeCalculator.ofWithSum(Range.from(4, 12),
+            final var endRange = HourlyRangeParkingHourFeeCalculator.ofWithSum(Range.from(4, 12),
                 BigDecimal.valueOf(120),
                 parkingHourRangeParkingHourBiFunction,
-                new FixedHourlyParkingFeeCalculator(BigDecimal.valueOf(200)));
-            final var feeCalculator = HourlyRangeParkingFeeCalculator.ofWithSum(Range.from(0, 4),
+                new FixedHourlyParkingHourFeeCalculator(BigDecimal.valueOf(200)));
+            final var feeCalculator = HourlyRangeParkingHourFeeCalculator.ofWithSum(Range.from(0, 4),
                 BigDecimal.valueOf(60),
                 (parkingHour, range) -> parkingHour,
                 endRange);
@@ -120,14 +120,14 @@ class HourlyRangeParkingFeeCalculatorTests {
         @ParameterizedTest(name = "Bike scenario {index} - {0} hours {1} minutes would cost {2}")
         @MethodSource(value = "bikeScenarios")
         void returnFeeWithRangeFeeModelWithFeePerHourInTheEnd(long hours, long minutes, long cost) {
-            final var feeCalculator = HourlyRangeParkingFeeCalculator.ofWithIdentical(
+            final var feeCalculator = HourlyRangeParkingHourFeeCalculator.ofWithIdentical(
                 Range.from(0, 1),
                 BigDecimal.valueOf(0),
-                HourlyRangeParkingFeeCalculator.ofWithIdentical(Range.from(1, 8),
+                HourlyRangeParkingHourFeeCalculator.ofWithIdentical(Range.from(1, 8),
                     BigDecimal.valueOf(40),
-                    HourlyRangeParkingFeeCalculator.ofWithIdentical(Range.from(8, 24),
+                    HourlyRangeParkingHourFeeCalculator.ofWithIdentical(Range.from(8, 24),
                         BigDecimal.valueOf(60),
-                        new PerDayParkingFeeCalculator(BigDecimal.valueOf(80)))));
+                        new PerDayParkingHourFeeCalculator(BigDecimal.valueOf(80)))));
             final var parkingHour = ParkingHour.from(hours, minutes);
 
             final Success<BigDecimal> result = (Success<BigDecimal>) feeCalculator.calculate(parkingHour);
@@ -138,12 +138,12 @@ class HourlyRangeParkingFeeCalculatorTests {
         @ParameterizedTest(name = "SUV scenario {index} - {0} hours {1} minutes would cost {2}")
         @MethodSource(value = "suvScenarios")
         void returnFeeWithRangeFeeModelWithFeePerHourInTheEnd2(long hours, long minutes, long cost) {
-            final var feeCalculator = HourlyRangeParkingFeeCalculator.ofWithIdentical(
+            final var feeCalculator = HourlyRangeParkingHourFeeCalculator.ofWithIdentical(
                 Range.from(0, 12),
                 BigDecimal.valueOf(60),
-                HourlyRangeParkingFeeCalculator.ofWithIdentical(Range.from(12, 24),
+                HourlyRangeParkingHourFeeCalculator.ofWithIdentical(Range.from(12, 24),
                     BigDecimal.valueOf(80),
-                    new PerDayParkingFeeCalculator(BigDecimal.valueOf(100))));
+                    new PerDayParkingHourFeeCalculator(BigDecimal.valueOf(100))));
             final var parkingHour = ParkingHour.from(hours, minutes);
 
             final Success<BigDecimal> result = (Success<BigDecimal>) feeCalculator.calculate(parkingHour);
@@ -164,7 +164,7 @@ class HourlyRangeParkingFeeCalculatorTests {
         }
     }
 
-    private record EmptyFeeCalculator() implements ParkingFeeCalculator {
+    private record EmptyHourFeeCalculator() implements ParkingHourFeeCalculator {
 
         @Override
         public Result<BigDecimal> calculate(ParkingHour totalHours) {
@@ -179,11 +179,11 @@ class HourlyRangeParkingFeeCalculatorTests {
                 "Next parking fee calculator must not be null"),
             Arguments.of(null,
                 BigDecimal.ONE,
-                new EmptyFeeCalculator(),
+                new EmptyHourFeeCalculator(),
                 "Range must not be null"),
             Arguments.of(Range.from(0, 2),
                 null,
-                new EmptyFeeCalculator(),
+                new EmptyHourFeeCalculator(),
                 "Parking fee for duration must not be null"));
     }
 }

@@ -14,13 +14,13 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(Lifecycle.PER_CLASS)
-class PerDayParkingFeeCalculatorTests {
+class PerDayParkingHourFeeCalculatorTests {
 
     @Test
     void returnOneDayParkingFeeWhenItsLessThan24Hours() {
         final var dailyFee = BigDecimal.valueOf(10);
         final var parkingHour = ParkingHour.withHours(12);
-        final var calculator = new PerDayParkingFeeCalculator(dailyFee);
+        final var calculator = new PerDayParkingHourFeeCalculator(dailyFee);
 
         final Success<BigDecimal> result = (Success<BigDecimal>) calculator.calculate(parkingHour);
 
@@ -30,7 +30,7 @@ class PerDayParkingFeeCalculatorTests {
     @Test
     void returnTwoDayParkingFeeWhenItsMoreThan24HoursAndLessThan48Hours() {
         final var dailyFee = BigDecimal.valueOf(10);
-        final var calculator = new PerDayParkingFeeCalculator(dailyFee);
+        final var calculator = new PerDayParkingHourFeeCalculator(dailyFee);
 
         final Success<BigDecimal> result = (Success<BigDecimal>) calculator.calculate(ParkingHour.withHours(36));
 
@@ -40,7 +40,7 @@ class PerDayParkingFeeCalculatorTests {
     @ParameterizedTest(name = "{0} dailyFee for {1} hours would be {2} total fee")
     @MethodSource("parameters")
     void returnCorrectDailyFee(BigDecimal dailyFee, long totalHours, BigDecimal totalFee) {
-        final var calculator = new PerDayParkingFeeCalculator(dailyFee);
+        final var calculator = new PerDayParkingHourFeeCalculator(dailyFee);
 
         final Success<BigDecimal> result = (Success<BigDecimal>) calculator.calculate(ParkingHour.withHours(totalHours));
 

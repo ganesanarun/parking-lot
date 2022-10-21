@@ -9,11 +9,11 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-class FixedHourlyParkingFeeCalculatorTests {
+class FixedHourlyParkingHourFeeCalculatorTests {
 
     @Test
     void returnFeePerHour() {
-        final var fixedHourlyParkingFeeCalculator = new FixedHourlyParkingFeeCalculator(BigDecimal.valueOf(10));
+        final var fixedHourlyParkingFeeCalculator = new FixedHourlyParkingHourFeeCalculator(BigDecimal.valueOf(10));
         var parkingHour = ParkingHour.withHours(10);
 
         var result = fixedHourlyParkingFeeCalculator.calculate(parkingHour);

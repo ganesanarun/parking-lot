@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 import static java.math.BigDecimal.valueOf;
 import static org.sahaj.calculators.ParkingHour.roundUpHours;
 
-public class FixedHourlyParkingFeeCalculator implements ParkingFeeCalculator {
+public class FixedHourlyParkingHourFeeCalculator implements ParkingHourFeeCalculator {
 
     private final BigDecimal feePerHour;
 
-    public FixedHourlyParkingFeeCalculator(BigDecimal feePerHour) {
+    public FixedHourlyParkingHourFeeCalculator(BigDecimal feePerHour) {
         this.feePerHour = feePerHour;
     }
 

@@ -7,19 +7,19 @@ import org.sahaj.Result.Success;
 import java.math.BigDecimal;
 import java.util.function.BiFunction;
 
-public class HourlyRangeParkingFeeCalculator implements ParkingFeeCalculator {
+public class HourlyRangeParkingHourFeeCalculator implements ParkingHourFeeCalculator {
 
     private final BiFunction<ParkingHour, Range, ParkingHour> parkingHourRangeParkingHourBiFunction;
     private final BiFunction<Result<BigDecimal>, Result<BigDecimal>, Result<BigDecimal>> resultProducer;
-    private final ParkingFeeCalculator next;
+    private final ParkingHourFeeCalculator next;
     private final Range range;
     private final BigDecimal feeForRange;
 
-    private HourlyRangeParkingFeeCalculator(Range range,
+    private HourlyRangeParkingHourFeeCalculator(Range range,
         BigDecimal feeForRange,
         BiFunction<ParkingHour, Range, ParkingHour> parkingHourRangeParkingHourBiFunction,
         BiFunction<Result<BigDecimal>, Result<BigDecimal>, Result<BigDecimal>> resultProducer,
-        ParkingFeeCalculator next) {
+        ParkingHourFeeCalculator next) {
         this.feeForRange = feeForRange;
         this.parkingHourRangeParkingHourBiFunction = parkingHourRangeParkingHourBiFunction;
         this.resultProducer = resultProducer;
@@ -39,23 +39,23 @@ public class HourlyRangeParkingFeeCalculator implements ParkingFeeCalculator {
             : new InvalidRangeError<>();
     }
 
-    public static HourlyRangeParkingFeeCalculator ofWithIdentical(Range range,
+    public static HourlyRangeParkingHourFeeCalculator ofWithIdentical(Range range,
         BigDecimal feeForRange,
-        ParkingFeeCalculator next) {
+        ParkingHourFeeCalculator next) {
         checkNull(range, feeForRange, next);
-        return new HourlyRangeParkingFeeCalculator(range,
+        return new HourlyRangeParkingHourFeeCalculator(range,
             feeForRange,
             (parkingHour, r) -> parkingHour,
             (result1, result2) -> result2,
             next);
     }
 
-    public static HourlyRangeParkingFeeCalculator ofWithSum(Range range,
+    public static HourlyRangeParkingHourFeeCalculator ofWithSum(Range range,
         BigDecimal feeForRange,
         BiFunction<ParkingHour, Range, ParkingHour> parkingHourRangeParkingHourBiFunction,
-        ParkingFeeCalculator next) {
+        ParkingHourFeeCalculator next) {
         checkNull(range, feeForRange, next);
-        return new HourlyRangeParkingFeeCalculator(range,
+        return new HourlyRangeParkingHourFeeCalculator(range,
             feeForRange,
             parkingHourRangeParkingHourBiFunction,
             (result1, result2) -> {
@@ -68,7 +68,7 @@ public class HourlyRangeParkingFeeCalculator implements ParkingFeeCalculator {
 
     private static void checkNull(Range range,
         BigDecimal feePerDuration,
-        ParkingFeeCalculator next) {
+        ParkingHourFeeCalculator next) {
         checkNull(range, "Range");
         checkNull(feePerDuration, "Parking fee for duration");
         checkNull(next, "Next parking fee calculator");

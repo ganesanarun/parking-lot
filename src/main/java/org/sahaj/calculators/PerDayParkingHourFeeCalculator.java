@@ -5,11 +5,11 @@ import org.sahaj.Result.Success;
 
 import java.math.BigDecimal;
 
-public class PerDayParkingFeeCalculator implements ParkingFeeCalculator {
+public class PerDayParkingHourFeeCalculator implements ParkingHourFeeCalculator {
 
     private final BigDecimal dailyFee;
 
-    public PerDayParkingFeeCalculator(BigDecimal dailyFee) {
+    public PerDayParkingHourFeeCalculator(BigDecimal dailyFee) {
         this.dailyFee = dailyFee;
     }
 
