@@ -2,9 +2,9 @@ package org.sahaj.calculators;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.sahaj.FeeResult.SpotSizeNotConfiguredError;
-import org.sahaj.FeeResult.Success;
-import org.sahaj.Size;
+import org.sahaj.common.FeeResult.SpotSizeNotConfiguredError;
+import org.sahaj.common.FeeResult.Success;
+import org.sahaj.common.Size;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;

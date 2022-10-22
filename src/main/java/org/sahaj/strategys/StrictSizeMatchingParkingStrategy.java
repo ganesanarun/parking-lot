@@ -1,11 +1,10 @@
 package org.sahaj.strategys;
 
-import org.sahaj.ParkingSpot;
-import org.sahaj.Size;
-import org.sahaj.Vehicle;
-import org.sahaj.VehicleType;
+import org.sahaj.common.ParkingSpot;
+import org.sahaj.common.Size;
+import org.sahaj.common.Vehicle;
+import org.sahaj.common.VehicleType;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;

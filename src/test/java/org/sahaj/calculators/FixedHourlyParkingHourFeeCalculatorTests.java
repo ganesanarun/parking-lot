@@ -2,7 +2,7 @@ package org.sahaj.calculators;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.sahaj.FeeResult.Success;
+import org.sahaj.common.FeeResult.Success;
 
 import java.math.BigDecimal;
 
@@ -18,7 +18,7 @@ class FixedHourlyParkingHourFeeCalculatorTests {
 
         var result = fixedHourlyParkingFeeCalculator.calculate(parkingHour);
 
-        final Success<BigDecimal> success = Assertions.assertInstanceOf(Success.class, result);
+        final var success = Assertions.assertInstanceOf(Success.class, result);
         assertEquals(new Success<>(BigDecimal.valueOf(100)), success);
     }
 

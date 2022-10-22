@@ -1,6 +1,6 @@
 package org.sahaj.calculators;
 
-import org.sahaj.Size;
+import org.sahaj.common.Size;
 
 import java.time.ZonedDateTime;
 

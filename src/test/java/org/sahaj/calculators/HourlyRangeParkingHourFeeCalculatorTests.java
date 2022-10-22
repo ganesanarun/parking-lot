@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.sahaj.FeeResult;
-import org.sahaj.FeeResult.InvalidRangeError;
-import org.sahaj.FeeResult.Success;
+import org.sahaj.common.FeeResult;
+import org.sahaj.common.FeeResult.InvalidRangeError;
+import org.sahaj.common.FeeResult.Success;
 
 import java.math.BigDecimal;
 import java.util.function.BiFunction;

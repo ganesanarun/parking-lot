@@ -1,6 +1,6 @@
 package org.sahaj.calculators;
 
-import org.sahaj.FeeResult;
+import org.sahaj.common.FeeResult;
 
 import java.math.BigDecimal;
 

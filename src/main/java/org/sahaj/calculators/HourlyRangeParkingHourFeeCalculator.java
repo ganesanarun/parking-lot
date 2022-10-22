@@ -1,8 +1,8 @@
 package org.sahaj.calculators;
 
-import org.sahaj.FeeResult;
-import org.sahaj.FeeResult.InvalidRangeError;
-import org.sahaj.FeeResult.Success;
+import org.sahaj.common.FeeResult;
+import org.sahaj.common.FeeResult.InvalidRangeError;
+import org.sahaj.common.FeeResult.Success;
 
 import java.math.BigDecimal;
 import java.util.function.BiFunction;

@@ -1,4 +1,4 @@
-package org.sahaj;
+package org.sahaj.common;
 
 public sealed interface VehicleType {
 

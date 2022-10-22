@@ -1,8 +1,8 @@
 package org.sahaj.calculators;
 
-import org.sahaj.FeeResult;
-import org.sahaj.FeeResult.SpotSizeNotConfiguredError;
-import org.sahaj.Size;
+import org.sahaj.common.FeeResult;
+import org.sahaj.common.FeeResult.SpotSizeNotConfiguredError;
+import org.sahaj.common.Size;
 
 import java.math.BigDecimal;
 import java.util.Map;

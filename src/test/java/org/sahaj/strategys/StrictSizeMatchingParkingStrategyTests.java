@@ -3,24 +3,23 @@ package org.sahaj.strategys;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.sahaj.ParkingSpot;
-import org.sahaj.Size;
-import org.sahaj.Vehicle;
-import org.sahaj.VehicleType;
-import org.sahaj.VehicleType.Bike;
-import org.sahaj.VehicleType.Car;
-import org.sahaj.VehicleType.Truck;
+import org.sahaj.common.ParkingSpot;
+import org.sahaj.common.Size;
+import org.sahaj.common.Vehicle;
+import org.sahaj.common.VehicleType;
+import org.sahaj.common.VehicleType.Bike;
+import org.sahaj.common.VehicleType.Car;
+import org.sahaj.common.VehicleType.Truck;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.of;
-import static org.sahaj.Size.LARGE;
-import static org.sahaj.Size.MEDIUM;
-import static org.sahaj.Size.SMALL;
+import static org.sahaj.common.Size.LARGE;
+import static org.sahaj.common.Size.MEDIUM;
+import static org.sahaj.common.Size.SMALL;
 
 class StrictSizeMatchingParkingStrategyTests {
 
