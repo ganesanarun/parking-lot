@@ -1,6 +1,10 @@
 package org.sahaj.parking;
 
 import org.sahaj.common.Allocation;
+import org.sahaj.common.ParkingResult;
+import org.sahaj.common.ParkingResult.NoOpenParkingSpot;
+import org.sahaj.common.ParkingResult.Success;
+import org.sahaj.common.ParkingResult.UnsupportedVehicle;
 import org.sahaj.common.ParkingSpot;
 import org.sahaj.common.ParkingTicket;
 import org.sahaj.common.Vehicle;
@@ -10,7 +14,6 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,19 +46,22 @@ public class ParkingFloor {
         this.parkingSpotAllocationStrategy = parkingSpotAllocationStrategy;
     }
 
-    Optional<Allocation> parkThis(Vehicle vehicle) {
+    ParkingResult<Allocation> parkThis(Vehicle vehicle) {
         final var maybeParkingSpot = parkingSpotAllocationStrategy.findOneFor(vehicle, freeParkingSpots);
-        if (maybeParkingSpot.isEmpty()) {
-            return Optional.empty();
-        }
-        var parkingSpot = maybeParkingSpot.get();
-        freeParkingSpots.remove(parkingSpot);
-        final var allocation = new Allocation(ticketNumberGenerator.nextOne(),
-            parkingSpot,
-            ZonedDateTime.now(),
-            vehicle);
-        allocationMap.put(parkingSpot.number(), allocation);
-        return Optional.of(allocation);
+        return switch (maybeParkingSpot) {
+            case UnsupportedVehicle<?> ignored -> new UnsupportedVehicle<>();
+            case NoOpenParkingSpot<?> ignored -> new NoOpenParkingSpot<>();
+            case Success<ParkingSpot> success -> {
+                var parkingSpot = success.value();
+                freeParkingSpots.remove(parkingSpot);
+                final var allocation = new Allocation(ticketNumberGenerator.nextOne(),
+                    parkingSpot,
+                    ZonedDateTime.now(),
+                    vehicle);
+                allocationMap.put(parkingSpot.number(), allocation);
+                yield new Success<>(allocation);
+            }
+        };
     }
 
     boolean unParkWith(ParkingTicket ticket) {

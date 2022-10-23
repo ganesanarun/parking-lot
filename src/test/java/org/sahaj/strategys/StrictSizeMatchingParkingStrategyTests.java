@@ -3,6 +3,7 @@ package org.sahaj.strategys;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.sahaj.common.ParkingResult;
 import org.sahaj.common.ParkingSpot;
 import org.sahaj.common.Size;
 import org.sahaj.common.Vehicle;
@@ -15,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.sahaj.common.Size.LARGE;
 import static org.sahaj.common.Size.MEDIUM;
@@ -33,7 +34,7 @@ class StrictSizeMatchingParkingStrategyTests {
 
         var mayBeParkingSpot = strictSizeMatchingParkingStrategy.findOneFor(vehicle, spotsWithEverything);
 
-        assertTrue(mayBeParkingSpot.isEmpty());
+        assertInstanceOf(ParkingResult.UnsupportedVehicle.class, mayBeParkingSpot);
     }
 
     @ParameterizedTest
@@ -46,7 +47,7 @@ class StrictSizeMatchingParkingStrategyTests {
 
         var mayBeParkingSpot = strictSizeMatchingParkingStrategy.findOneFor(vehicle, spots);
 
-        assertTrue(mayBeParkingSpot.isEmpty());
+        assertInstanceOf(ParkingResult.NoOpenParkingSpot.class, mayBeParkingSpot);
     }
 
     @ParameterizedTest
@@ -59,7 +60,7 @@ class StrictSizeMatchingParkingStrategyTests {
 
         var mayBeParkingSpot = strictSizeMatchingParkingStrategy.findOneFor(vehicle, spots);
 
-        assertTrue(mayBeParkingSpot.isPresent());
+        assertInstanceOf(ParkingResult.Success.class, mayBeParkingSpot);
     }
 
 

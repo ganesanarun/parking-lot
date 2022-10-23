@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sahaj.common.Allocation;
+import org.sahaj.common.ParkingResult;
 import org.sahaj.common.ParkingSpot;
 import org.sahaj.common.ParkingTicket;
 import org.sahaj.common.Size;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sahaj.common.Size.LARGE;
 import static org.sahaj.common.Size.MEDIUM;
@@ -51,14 +53,14 @@ public class ParkingFloorTests {
 
             final var maybeParkResult = parkingFloor.parkThis(vehicleToPark);
 
-            assertTrue(maybeParkResult.isPresent());
-            assertEquals(ticketNumber, maybeParkResult.get().number());
-            assertEquals(maybeParkResult.get().parkingSpot(), parkingSpotToBeUsed);
+            final var success = (ParkingResult.Success<Allocation>) maybeParkResult;
+            assertEquals(ticketNumber, success.value().number());
+            assertEquals(parkingSpotToBeUsed, success.value().parkingSpot());
         }
 
         @ParameterizedTest(name = "[{index}] {2}")
         @MethodSource(value = "unAvailableParkingSpots")
-        void returnEmptyResultIfParkingFloorIsFull(Set<ParkingSpot> spots,
+        void returnNoParkingResultIfParkingFloorIsFull(Set<ParkingSpot> spots,
             Vehicle vehicleToPark,
             String scenario) {
             final var ticketNumberGenerator = new InMemoryTicketNumberGenerator(1, () -> "");
@@ -71,12 +73,12 @@ public class ParkingFloorTests {
 
             final var maybeParkResult = parkingFloor.parkThis(vehicleToPark);
 
-            assertTrue(maybeParkResult.isEmpty());
+            assertInstanceOf(ParkingResult.NoOpenParkingSpot.class, maybeParkResult);
         }
 
         @ParameterizedTest(name = "[{index}] {3}")
         @MethodSource(value = "unSupportedParkingSpots")
-        void returnEmptyResultIfParkingIsNotSupportedVehicle(
+        void returnUnsupportedVehicleResultIfParkingIsNotSupportedVehicle(
             ParkingSpotAllocationStrategy allocationStrategy,
             Set<ParkingSpot> spots,
             Vehicle vehicleToPark,
@@ -86,7 +88,7 @@ public class ParkingFloorTests {
 
             final var maybeParkResult = parkingFloor.parkThis(vehicleToPark);
 
-            assertTrue(maybeParkResult.isEmpty());
+            assertInstanceOf(ParkingResult.UnsupportedVehicle.class, maybeParkResult);
         }
 
 
@@ -160,9 +162,9 @@ public class ParkingFloorTests {
             final var unParked = parkingFloor.unParkWith(parkingTicket);
             final var allocationAfterUnParked = parkingFloor.parkThis(vehicleToPark);
 
-            assertTrue(allocationBeforeUnParked.isEmpty());
+            assertInstanceOf(ParkingResult.NoOpenParkingSpot.class, allocationBeforeUnParked);
             assertTrue(unParked);
-            assertTrue(allocationAfterUnParked.isPresent());
+            assertInstanceOf(ParkingResult.Success.class, allocationAfterUnParked);
         }
 
         @Test

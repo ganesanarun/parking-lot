@@ -7,8 +7,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sahaj.common.Allocation;
+import org.sahaj.common.ParkingResult;
 import org.sahaj.common.ParkingSpot;
 import org.sahaj.common.ParkingTicket;
+import org.sahaj.common.Receipt;
 import org.sahaj.common.Size;
 import org.sahaj.common.Vehicle;
 import org.sahaj.common.VehicleType.Bike;
@@ -20,6 +22,7 @@ import org.sahaj.calculators.ParkingFeeCalculator;
 import org.sahaj.calculators.ParkingHourFeeCalculator;
 import org.sahaj.calculators.PerDayParkingHourFeeCalculator;
 import org.sahaj.calculators.Range;
+import org.sahaj.parking.UnParkingResult.Success;
 import org.sahaj.strategys.ParkingSpotAllocationStrategy;
 import org.sahaj.strategys.StrictSizeMatchingParkingStrategy;
 
@@ -32,7 +35,7 @@ import java.util.stream.Stream;
 import static java.math.BigDecimal.ZERO;
 import static java.math.BigDecimal.valueOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.sahaj.common.Size.LARGE;
 import static org.sahaj.common.Size.MEDIUM;
 import static org.sahaj.common.Size.SMALL;
@@ -90,7 +93,7 @@ public class ParkingLotTests {
 
             final var maybeParkingTicket = stadiumParkingLot.parkThis(new Vehicle(new Truck()));
 
-            assertTrue(maybeParkingTicket.isEmpty());
+            assertInstanceOf(ParkingResult.UnsupportedVehicle.class, maybeParkingTicket);
         }
 
         @ParameterizedTest
@@ -105,7 +108,7 @@ public class ParkingLotTests {
 
             final var maybeParkingTicket = airportParkingLot.parkThis(vehicle);
 
-            assertTrue(maybeParkingTicket.isPresent());
+            assertInstanceOf(ParkingResult.Success.class, maybeParkingTicket);
         }
 
         @ParameterizedTest(name = "[{index}] {3}")
@@ -123,8 +126,9 @@ public class ParkingLotTests {
 
             final var receipt = airportParkingLot.unParkWith(parkingTicket);
 
-            assertTrue(receipt.isPresent());
-            assertEquals(expectedResult, receipt.get().value());
+            assertInstanceOf(Success.class, receipt);
+            final var success = (Success<Receipt>) receipt;
+            assertEquals(expectedResult, success.value().parkingFee());
         }
 
         static Stream<Arguments> parkArguments() {
@@ -219,7 +223,7 @@ public class ParkingLotTests {
 
             final var maybeParkingTicket = airportParkingLot.parkThis(new Vehicle(new Truck()));
 
-            assertTrue(maybeParkingTicket.isEmpty());
+            assertInstanceOf(ParkingResult.UnsupportedVehicle.class, maybeParkingTicket);
         }
 
         @ParameterizedTest
@@ -233,7 +237,7 @@ public class ParkingLotTests {
 
             final var maybeParkingTicket = airportParkingLot.parkThis(vehicle);
 
-            assertTrue(maybeParkingTicket.isPresent());
+            assertInstanceOf(ParkingResult.Success.class, maybeParkingTicket);
         }
 
         @ParameterizedTest(name = "[{index}] {3}")
@@ -251,8 +255,9 @@ public class ParkingLotTests {
 
             final var receipt = airportParkingLot.unParkWith(parkingTicket);
 
-            assertTrue(receipt.isPresent());
-            assertEquals(expectedResult, receipt.get().value());
+            assertInstanceOf(Success.class, receipt);
+            final var success = (Success<Receipt>) receipt;
+            assertEquals(expectedResult, success.value().parkingFee());
         }
 
         static Stream<Arguments> parkArguments() {
@@ -363,7 +368,22 @@ public class ParkingLotTests {
 
             final var maybeParkingTicket = mallParkingLot.parkThis(vehicle);
 
-            assertTrue(maybeParkingTicket.isPresent());
+            assertInstanceOf(ParkingResult.Success.class, maybeParkingTicket);
+        }
+
+        @ParameterizedTest
+        @MethodSource(value = "emptySpotArguments")
+        void unableToParkBecauseOfEmptySpots(Vehicle vehicle) {
+            final var ticketNumberGenerator = new InMemoryTicketNumberGenerator(1, () -> "");
+            final var parkingFloor = new ParkingFloor(
+                Set.of(),
+                parkingSpotAllocationStrategy,
+                ticketNumberGenerator);
+            ParkingLot mallParkingLot = new ParkingLot(parkingFloor, parkingFeeBySpotSizeCalculator);
+
+            final var maybeParkingTicket = mallParkingLot.parkThis(vehicle);
+
+            assertInstanceOf(ParkingResult.NoOpenParkingSpot.class, maybeParkingTicket);
         }
 
         @ParameterizedTest(name = "[{index}] {3}")
@@ -381,11 +401,18 @@ public class ParkingLotTests {
 
             final var receipt = mallParkingLot.unParkWith(parkingTicket);
 
-            assertTrue(receipt.isPresent());
-            assertEquals(expectedResult, receipt.get().value());
+            assertInstanceOf(Success.class, receipt);
+            final var success = (Success<Receipt>) receipt;
+            assertEquals(expectedResult, success.value().parkingFee());
         }
 
         static Stream<Arguments> parkArguments() {
+            return Stream.of(Arguments.of(new Vehicle(new Bike())),
+                Arguments.of(new Vehicle(new Car())),
+                Arguments.of(new Vehicle(new Truck())));
+        }
+
+        static Stream<Arguments> emptySpotArguments() {
             return Stream.of(Arguments.of(new Vehicle(new Bike())),
                 Arguments.of(new Vehicle(new Car())),
                 Arguments.of(new Vehicle(new Truck())));

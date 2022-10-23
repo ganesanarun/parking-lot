@@ -1,19 +1,22 @@
 package org.sahaj.parking;
 
+import org.sahaj.common.Allocation;
 import org.sahaj.common.FeeResult.InvalidRangeError;
 import org.sahaj.common.FeeResult.SpotSizeNotConfiguredError;
 import org.sahaj.common.FeeResult.Success;
 import org.sahaj.calculators.ParkingFeeCalculator;
 import org.sahaj.calculators.ParkingToken;
+import org.sahaj.common.ParkingResult;
+import org.sahaj.common.ParkingResult.NoOpenParkingSpot;
+import org.sahaj.common.ParkingResult.UnsupportedVehicle;
 import org.sahaj.common.ParkingTicket;
 import org.sahaj.common.Receipt;
 import org.sahaj.common.Vehicle;
+import org.sahaj.parking.UnParkingResult.EmptyParkingSpot;
+import org.sahaj.parking.UnParkingResult.FailedConfigurationError;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Optional;
-
-import static java.util.Optional.empty;
 
 public final class ParkingLot {
 
@@ -26,35 +29,36 @@ public final class ParkingLot {
         this.parkingFeeCalculator = parkingFeeCalculator;
     }
 
-    // ParkResult -> Success<ParkingTicket>, UnsupportedVehicle, NoOpenParkingSpot
-    Optional<ParkingTicket> parkThis(Vehicle vehicle) {
+    ParkingResult<ParkingTicket> parkThis(Vehicle vehicle) {
         final var maybeAllocation = parkingFloor.parkThis(vehicle);
-        if (maybeAllocation.isEmpty()) {
-            return empty();
-        }
-        return Optional.of(new ParkingTicket(maybeAllocation.get().parkingSpot().number(),
-            ZonedDateTime.now(),
-            maybeAllocation.get().number(),
-            maybeAllocation.get().parkingSpot().size()));
+        return switch (maybeAllocation) {
+            case NoOpenParkingSpot<?> ignored -> new NoOpenParkingSpot<>();
+            case UnsupportedVehicle<?> ignored -> new UnsupportedVehicle<>();
+            case ParkingResult.Success<Allocation> success -> {
+                final var parkingTicket = new ParkingTicket(success.value().parkingSpot().number(),
+                    ZonedDateTime.now(),
+                    success.value().number(),
+                    success.value().parkingSpot().size());
+                yield new ParkingResult.Success<>(parkingTicket);
+            }
+        };
     }
 
-    // UnParkResult -> Success<Receipt>, EmptyParkingSpot, FailedToGenerateReceipt
-    Optional<Receipt> unParkWith(ParkingTicket parkingTicket) {
-        // parkingFloor number as well
+    UnParkingResult<Receipt> unParkWith(ParkingTicket parkingTicket) {
         final var b = parkingFloor.unParkWith(parkingTicket);
         if (!b) {
-            return empty();
+            return new EmptyParkingSpot<>();
         }
         final var exitTime = ZonedDateTime.now();
         final var feeResult = parkingFeeCalculator.feeFor(new ParkingToken(parkingTicket.entryTime(),
             exitTime,
             parkingTicket.size()));
         return switch (feeResult) {
-            case Success<BigDecimal> success -> Optional.of(new Receipt(parkingTicket.entryTime(),
+            case Success<BigDecimal> success -> new UnParkingResult.Success<>(new Receipt(parkingTicket.entryTime(),
                 exitTime,
                 success.value()));
-            case SpotSizeNotConfiguredError<BigDecimal> ignored -> Optional.empty();
-            case InvalidRangeError<BigDecimal> ignored -> Optional.empty();
+            case SpotSizeNotConfiguredError<BigDecimal> ignored -> new FailedConfigurationError<>();
+            case InvalidRangeError<BigDecimal> ignored -> new FailedConfigurationError<>();
         };
     }
 }
