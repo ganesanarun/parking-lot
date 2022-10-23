@@ -4,6 +4,9 @@ import org.sahaj.common.ParkingSpot;
 import org.sahaj.common.Size;
 import org.sahaj.common.Vehicle;
 import org.sahaj.common.VehicleType;
+import org.sahaj.common.VehicleType.Bike;
+import org.sahaj.common.VehicleType.Car;
+import org.sahaj.common.VehicleType.Truck;
 
 import java.util.Map;
 import java.util.Optional;
@@ -22,11 +25,15 @@ public class StrictSizeMatchingParkingStrategy implements ParkingSpotAllocationS
 
     @Override
     public Optional<ParkingSpot> findOneFor(Vehicle vehicle, Set<ParkingSpot> spots) {
-        if (!vehicleTypeSizeMap.containsKey(vehicle.vehicleType())) {
-            return Optional.empty();
-        }
-        final var size = vehicleTypeSizeMap.get(vehicle.vehicleType());
-        return parkingSpotsOf(size, spots).findFirst();
+        // Doing this way to compiler to throw an error if new Vehicle type is introduced
+        return switch (vehicle.vehicleType()) {
+            case Car c && !vehicleTypeSizeMap.containsKey(c) -> Optional.empty();
+            case Car c -> parkingSpotsOf(vehicleTypeSizeMap.get(c), spots).findFirst();
+            case Bike b && !vehicleTypeSizeMap.containsKey(b) -> Optional.empty();
+            case Bike b -> parkingSpotsOf(vehicleTypeSizeMap.get(b), spots).findFirst();
+            case Truck t && !vehicleTypeSizeMap.containsKey(t) -> Optional.empty();
+            case Truck t -> parkingSpotsOf(vehicleTypeSizeMap.get(t), spots).findFirst();
+        };
     }
 
     static Stream<ParkingSpot> parkingSpotsOf(Size size, Set<ParkingSpot> spots) {
