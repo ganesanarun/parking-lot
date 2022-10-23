@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ParkingFloor {
@@ -22,19 +21,24 @@ public class ParkingFloor {
     private final Map<String, Allocation> allocationMap;
 
     private final ParkingSpotAllocationStrategy parkingSpotAllocationStrategy;
+    private final TicketNumberGenerator ticketNumberGenerator;
 
 
     public ParkingFloor(Set<ParkingSpot> freeParkingSpots,
         Set<Allocation> allocations,
-        ParkingSpotAllocationStrategy parkingSpotAllocationStrategy) {
+        ParkingSpotAllocationStrategy parkingSpotAllocationStrategy,
+        TicketNumberGenerator ticketNumberGenerator) {
         this.freeParkingSpots = new HashSet<>(freeParkingSpots);
         this.allocationMap = mapFrom(allocations);
         this.parkingSpotAllocationStrategy = parkingSpotAllocationStrategy;
+        this.ticketNumberGenerator = ticketNumberGenerator;
     }
 
     public ParkingFloor(Set<ParkingSpot> freeParkingSpots,
-        ParkingSpotAllocationStrategy parkingSpotAllocationStrategy) {
+        ParkingSpotAllocationStrategy parkingSpotAllocationStrategy,
+        TicketNumberGenerator ticketNumberGenerator) {
         this.freeParkingSpots = new HashSet<>(freeParkingSpots);
+        this.ticketNumberGenerator = ticketNumberGenerator;
         this.allocationMap = new HashMap<>();
         this.parkingSpotAllocationStrategy = parkingSpotAllocationStrategy;
     }
@@ -46,7 +50,7 @@ public class ParkingFloor {
         }
         var parkingSpot = maybeParkingSpot.get();
         freeParkingSpots.remove(parkingSpot);
-        final var allocation = new Allocation(UUID.randomUUID().toString(),
+        final var allocation = new Allocation(ticketNumberGenerator.nextOne(),
             parkingSpot,
             ZonedDateTime.now(),
             vehicle);

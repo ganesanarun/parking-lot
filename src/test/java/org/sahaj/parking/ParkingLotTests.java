@@ -85,7 +85,7 @@ public class ParkingLotTests {
 
         @Test
         void unableToParkTruck() {
-            final var parkingFloor = new ParkingFloor(parkingSpots, parkingSpotAllocationStrategy);
+            final var parkingFloor = new ParkingFloor(parkingSpots, parkingSpotAllocationStrategy, () -> "");
             ParkingLot stadiumParkingLot = new ParkingLot(parkingFloor, parkingFeeBySpotSizeCalculator);
 
             final var maybeParkingTicket = stadiumParkingLot.parkThis(new Vehicle(new Truck()));
@@ -96,9 +96,11 @@ public class ParkingLotTests {
         @ParameterizedTest
         @MethodSource(value = "parkArguments")
         void ableToPark(Vehicle vehicle) {
+            final var ticketNumberGenerator = new InMemoryTicketNumberGenerator(1, () -> "");
             final var parkingFloor = new ParkingFloor(
                 parkingSpots,
-                parkingSpotAllocationStrategy);
+                parkingSpotAllocationStrategy,
+                ticketNumberGenerator);
             ParkingLot airportParkingLot = new ParkingLot(parkingFloor, parkingFeeBySpotSizeCalculator);
 
             final var maybeParkingTicket = airportParkingLot.parkThis(vehicle);
@@ -112,7 +114,11 @@ public class ParkingLotTests {
             Allocation allocation,
             BigDecimal expectedResult,
             String scenario) {
-            final var parkingFloor = new ParkingFloor(parkingSpots, Set.of(allocation), parkingSpotAllocationStrategy);
+            final var ticketNumberGenerator = new InMemoryTicketNumberGenerator(1, () -> "");
+            final var parkingFloor = new ParkingFloor(parkingSpots,
+                Set.of(allocation),
+                parkingSpotAllocationStrategy,
+                ticketNumberGenerator);
             ParkingLot airportParkingLot = new ParkingLot(parkingFloor, parkingFeeBySpotSizeCalculator);
 
             final var receipt = airportParkingLot.unParkWith(parkingTicket);
@@ -208,7 +214,7 @@ public class ParkingLotTests {
         void unableToParkTruck() {
             final var parkingFloor = new ParkingFloor(
                 parkingSpots,
-                parkingSpotAllocationStrategy);
+                parkingSpotAllocationStrategy, () -> "");
             ParkingLot airportParkingLot = new ParkingLot(parkingFloor, parkingFeeBySpotSizeCalculator);
 
             final var maybeParkingTicket = airportParkingLot.parkThis(new Vehicle(new Truck()));
@@ -221,7 +227,8 @@ public class ParkingLotTests {
         void ableToPark(Vehicle vehicle) {
             final var parkingFloor = new ParkingFloor(
                 parkingSpots,
-                parkingSpotAllocationStrategy);
+                parkingSpotAllocationStrategy,
+                () -> "");
             ParkingLot airportParkingLot = new ParkingLot(parkingFloor, parkingFeeBySpotSizeCalculator);
 
             final var maybeParkingTicket = airportParkingLot.parkThis(vehicle);
@@ -235,7 +242,11 @@ public class ParkingLotTests {
             Allocation allocation,
             BigDecimal expectedResult,
             String scenario) {
-            final var parkingFloor = new ParkingFloor(parkingSpots, Set.of(allocation), parkingSpotAllocationStrategy);
+            final var ticketNumberGenerator = new InMemoryTicketNumberGenerator(1, () -> "");
+            final var parkingFloor = new ParkingFloor(parkingSpots,
+                Set.of(allocation),
+                parkingSpotAllocationStrategy,
+                ticketNumberGenerator);
             ParkingLot airportParkingLot = new ParkingLot(parkingFloor, parkingFeeBySpotSizeCalculator);
 
             final var receipt = airportParkingLot.unParkWith(parkingTicket);
@@ -343,9 +354,11 @@ public class ParkingLotTests {
         @ParameterizedTest
         @MethodSource(value = "parkArguments")
         void ableToPark(Vehicle vehicle) {
+            final var ticketNumberGenerator = new InMemoryTicketNumberGenerator(1, () -> "");
             final var parkingFloor = new ParkingFloor(
                 parkingSpots,
-                parkingSpotAllocationStrategy);
+                parkingSpotAllocationStrategy,
+                ticketNumberGenerator);
             ParkingLot mallParkingLot = new ParkingLot(parkingFloor, parkingFeeBySpotSizeCalculator);
 
             final var maybeParkingTicket = mallParkingLot.parkThis(vehicle);
@@ -359,7 +372,11 @@ public class ParkingLotTests {
             Allocation allocation,
             BigDecimal expectedResult,
             String scenario) {
-            final var parkingFloor = new ParkingFloor(parkingSpots, Set.of(allocation), parkingSpotAllocationStrategy);
+            final var ticketNumberGenerator = new InMemoryTicketNumberGenerator(1, () -> "");
+            final var parkingFloor = new ParkingFloor(parkingSpots,
+                Set.of(allocation),
+                parkingSpotAllocationStrategy,
+                ticketNumberGenerator);
             ParkingLot mallParkingLot = new ParkingLot(parkingFloor, parkingFeeBySpotSizeCalculator);
 
             final var receipt = mallParkingLot.unParkWith(parkingTicket);

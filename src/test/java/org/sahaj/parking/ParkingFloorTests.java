@@ -39,15 +39,20 @@ public class ParkingFloorTests {
         void returnParkingTicketWhenSpotIsAvailable(Set<ParkingSpot> spots,
             Vehicle vehicleToPark,
             ParkingSpot parkingSpotToBeUsed,
-            String scenario) {
+            String scenario,
+            String ticketNumber,
+            TicketNumberGenerator ticketNumberGenerator) {
             final var vehicleTypeSizeMap = Map.<VehicleType, Size>of(new Bike(), SMALL,
                 new Car(), MEDIUM,
                 new Truck(), LARGE);
-            final var parkingFloor = new ParkingFloor(spots, new StrictSizeMatchingParkingStrategy(vehicleTypeSizeMap));
+            final var parkingFloor = new ParkingFloor(spots,
+                new StrictSizeMatchingParkingStrategy(vehicleTypeSizeMap),
+                ticketNumberGenerator);
 
             final var maybeParkResult = parkingFloor.parkThis(vehicleToPark);
 
             assertTrue(maybeParkResult.isPresent());
+            assertEquals(ticketNumber, maybeParkResult.get().number());
             assertEquals(maybeParkResult.get().parkingSpot(), parkingSpotToBeUsed);
         }
 
@@ -56,10 +61,13 @@ public class ParkingFloorTests {
         void returnEmptyResultIfParkingFloorIsFull(Set<ParkingSpot> spots,
             Vehicle vehicleToPark,
             String scenario) {
+            final var ticketNumberGenerator = new InMemoryTicketNumberGenerator(1, () -> "");
             final var vehicleTypeSizeMap = Map.<VehicleType, Size>of(new Bike(), SMALL,
                 new Car(), MEDIUM,
                 new Truck(), LARGE);
-            final var parkingFloor = new ParkingFloor(spots, new StrictSizeMatchingParkingStrategy(vehicleTypeSizeMap));
+            final var parkingFloor = new ParkingFloor(spots,
+                new StrictSizeMatchingParkingStrategy(vehicleTypeSizeMap),
+                ticketNumberGenerator);
 
             final var maybeParkResult = parkingFloor.parkThis(vehicleToPark);
 
@@ -73,10 +81,8 @@ public class ParkingFloorTests {
             Set<ParkingSpot> spots,
             Vehicle vehicleToPark,
             String scenario) {
-            final var vehicleTypeSizeMap = Map.<VehicleType, Size>of(new Bike(), SMALL,
-                new Car(), MEDIUM,
-                new Truck(), LARGE);
-            final var parkingFloor = new ParkingFloor(spots, allocationStrategy);
+            final var ticketNumberGenerator = new InMemoryTicketNumberGenerator(1, () -> "");
+            final var parkingFloor = new ParkingFloor(spots, allocationStrategy, ticketNumberGenerator);
 
             final var maybeParkResult = parkingFloor.parkThis(vehicleToPark);
 
@@ -88,11 +94,15 @@ public class ParkingFloorTests {
             final var bikeSpot = new ParkingSpot("S1", SMALL);
             final var carSpot = new ParkingSpot("M1", MEDIUM);
             final var truckSpot = new ParkingSpot("L1", LARGE);
+            final var generator = new InMemoryTicketNumberGenerator(1, () -> "");
             final var spots = Set.of(bikeSpot, carSpot, truckSpot);
             return Stream.of(
-                Arguments.of(spots, new Vehicle(new Bike()), bikeSpot, "bike parked successfully"),
-                Arguments.of(spots, new Vehicle(new Car()), carSpot, "car parked successfully"),
-                Arguments.of(spots, new Vehicle(new Truck()), truckSpot, "truck parked successfully")
+                Arguments.of(spots, new Vehicle(new Bike()), bikeSpot,
+                    "bike parked successfully with parking number: 001", "001", generator),
+                Arguments.of(spots, new Vehicle(new Car()), carSpot, "car parked successfully with parking number: 002",
+                    "002", generator),
+                Arguments.of(spots, new Vehicle(new Truck()), truckSpot,
+                    "truck parked successfully with parking number: 003", "003", generator)
             );
         }
 
@@ -137,12 +147,14 @@ public class ParkingFloorTests {
             Set<Allocation> allocations,
             ParkingTicket parkingTicket,
             String scenario) {
+            final var ticketNumberGenerator = new InMemoryTicketNumberGenerator(1, () -> "");
             final var vehicleTypeSizeMap = Map.<VehicleType, Size>of(new Bike(), SMALL,
                 new Car(), MEDIUM,
                 new Truck(), LARGE);
             final var parkingFloor = new ParkingFloor(Set.of(),
                 allocations,
-                new StrictSizeMatchingParkingStrategy(vehicleTypeSizeMap));
+                new StrictSizeMatchingParkingStrategy(vehicleTypeSizeMap),
+                ticketNumberGenerator);
 
             final var allocationBeforeUnParked = parkingFloor.parkThis(vehicleToPark);
             final var unParked = parkingFloor.unParkWith(parkingTicket);
@@ -155,13 +167,15 @@ public class ParkingFloorTests {
 
         @Test
         void returnFailToUnParkWhenInvalidTicketNumberIsGiven() {
-             var parkingTicket = new ParkingTicket("A1",
-                        ZonedDateTime.now(),
-                        "001",
-                        SMALL);
+            var parkingTicket = new ParkingTicket("A1",
+                ZonedDateTime.now(),
+                "001",
+                SMALL);
+            final var ticketNumberGenerator = new InMemoryTicketNumberGenerator(1, () -> "");
             final var parkingFloor = new ParkingFloor(Set.of(),
                 Set.of(),
-                new StrictSizeMatchingParkingStrategy(Map.of()));
+                new StrictSizeMatchingParkingStrategy(Map.of()),
+                ticketNumberGenerator);
 
             final var unParked = parkingFloor.unParkWith(parkingTicket);
 
