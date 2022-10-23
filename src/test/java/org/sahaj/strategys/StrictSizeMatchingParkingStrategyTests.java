@@ -26,7 +26,7 @@ class StrictSizeMatchingParkingStrategyTests {
 
     @ParameterizedTest
     @MethodSource(value = "unsupportedParameters")
-    void returnEmptyParkingSpotForUnsupportedVehicles(Vehicle vehicle, Map<VehicleType, Size> vehicleTypeSizeMap) {
+    void returnUnsupportedResultForUnsupportedVehicles(Vehicle vehicle, Map<VehicleType, Size> vehicleTypeSizeMap) {
         final var spotsWithEverything = Set.of(new ParkingSpot("A1", MEDIUM),
             new ParkingSpot("A2", LARGE),
             new ParkingSpot("A3", Size.SMALL));
@@ -39,7 +39,7 @@ class StrictSizeMatchingParkingStrategyTests {
 
     @ParameterizedTest
     @MethodSource(value = "nonAvailableParameters")
-    void returnEmptyWhenMatchingSpotDoesNotExists(Vehicle vehicle, Set<ParkingSpot> spots) {
+    void returnNoParkingResultWhenMatchingSpotDoesNotExists(Vehicle vehicle, Set<ParkingSpot> spots) {
         final var vehicleSizeMap = Map.<VehicleType, Size>of(new Car(), MEDIUM,
             new Bike(), SMALL,
             new Truck(), LARGE);
