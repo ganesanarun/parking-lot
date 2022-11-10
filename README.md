@@ -7,3 +7,9 @@
 ```shell
 ./gradlew test
 ```
+
+## One way to install java 17 (using sdkman)
+
+```shell
+sdk install java 17.0.2.8.1-amzn
+```
